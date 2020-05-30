@@ -1,5 +1,7 @@
 ﻿using Chapter11.CreatingAndUsingObjects;
 using System;
+using System.Globalization;
+using System.Text;
 
 namespace Chapter11
 {
@@ -17,6 +19,9 @@ namespace Chapter11
     6   -   TriangleArea
     7   -   CreatingAndUsingObjects
     8   -   CreateTenCats
+    9   -   WorkingDays
+    10  -   GetSum
+    11  -   AdvertisingMessage
 ");
             Console.Write("\nEnter option: ");
             int option = int.Parse(Console.ReadLine());
@@ -44,9 +49,21 @@ namespace Chapter11
                 case 8:
                     CreateObjects.CreateTenCats();
                     break;
+                case 9:
+                    WorkingDay.CountWorkDays();
+                    break;
+                case 10:
+                    GetSum.CalculateSum();
+                    break;
+                case 11:
+                    AdvertisingMessage.ShowAdvertisingMessage();
+                    break;
                 default:
                     break;
             }
+
+            Console.WriteLine("\n\nPress the enter key to exit.");
+            Console.ReadLine();
         }
     }
 
@@ -76,7 +93,8 @@ namespace Chapter11
     {
         public static void WeekDay()
         {
-            Console.WriteLine(DateTime.Today.DayOfWeek);
+            Console.WriteLine(DateTime.Today.DayOfWeek);   
+            Console.Write("Testing");
         }
     }
 
@@ -290,11 +308,77 @@ namespace Chapter11
 
     static class WorkingDay
     {
-        static DayOfWeek[] workdays = new DayOfWeek[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday};
+        static DayOfWeek[] notworkdays = new DayOfWeek[] { DayOfWeek.Saturday, DayOfWeek.Sunday};
 
         public static void CountWorkDays()
         {
+            string format = "dd/MM/yyyy";
             Console.Write("Enter date (dd/mm/yyyy): ");
+            DateTime parsedDate = DateTime.ParseExact(
+             Console.ReadLine(), format, CultureInfo.InvariantCulture);
+            DateTime present = DateTime.Now.Date;
+            int count = 0;
+            while(present.CompareTo(parsedDate) != 0)
+            {
+                bool workDay = true;
+                foreach ( DayOfWeek day in notworkdays)
+                {
+                    if (present.DayOfWeek.CompareTo(day) == 0)
+                    {
+                        workDay = false;
+                    }
+                }
+                if (workDay)
+                {
+                    count++;
+                }
+                present = present.AddDays(1);
+            }
+            Console.WriteLine("\n\nThere are {0} working days between now({2:dd/MM/yyyy}) and {1:dd/MM/yyyy}.", count, parsedDate, DateTime.Now.Date);
+        }        
+    }
+
+    static class GetSum
+    {
+        public static void CalculateSum()
+        {
+            Console.Write("Enter numbers (seperated by space):  ");
+            string numberString = Console.ReadLine();
+            string[] strNumbers = numberString.Split(" ");
+            int sum = 0;
+            foreach (string num in strNumbers)
+            {
+                sum += int.Parse(num);
+            }
+            Console.WriteLine("\nThe sum of the numbers is {0}", sum);
+        }
+    }
+
+    static class AdvertisingMessage
+    {
+        private static string[] laudatoryPhrases = new string[] {"The product is excellent.", "This is a great product.", "I use this product constantly.", "This is the best product from this category."};
+        private static string[] laudatoryStories = new string[] {"Now I feel better.", "I managed to change.", "It made some miracle.", "I can’t believe it, but now I am feeling great.", "You should try it, too. I am very satisfied."};
+        private static string[] firstName = new string[] { "Dayan", "Stella", "Hellen", "Kate" };
+        private static string[] lastName = new string[] { "Johnson", "Peterson", "Charls" };
+        private static string[] cities = new string[] { "London", "Paris", "Berlin", "New York", "Madrid" };
+
+        private static string message;
+        public static string Message { get => message; }
+        public static void ShowAdvertisingMessage()
+        {
+            StringBuilder temp = new StringBuilder();
+            temp.Append(laudatoryPhrases[new Random().Next(laudatoryPhrases.Length)]);
+            temp.Append(" ");
+            temp.Append(laudatoryStories[new Random().Next(laudatoryStories.Length)]);
+            temp.Append(" -- ");
+            temp.Append(firstName[new Random().Next(firstName.Length)]);
+            temp.Append(" ");
+            temp.Append(lastName[new Random().Next(lastName.Length)]);
+            temp.Append(", ");
+            temp.Append(cities[new Random().Next(cities.Length)]);
+
+            message = temp.ToString();
+            Console.WriteLine(message);
         }
     }
 }
